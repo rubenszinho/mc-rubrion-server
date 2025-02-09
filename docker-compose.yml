@@ -1,0 +1,23 @@
+version: "3.8"
+services:
+  minecraft:
+    image: itzg/minecraft-server
+    container_name: mc_server
+    ports:
+      - "25565:25565"
+    environment:
+      EULA: "TRUE"
+      VERSION: "LATEST"
+      TYPE: "PAPER"
+      MEMORY: "4G"
+      ONLINE_MODE: "TRUE"
+      MAX_PLAYERS: "20"
+      VIEW_DISTANCE: "10"
+      DIFFICULTY: "normal"
+      PVP: "true"
+      ENABLE_COMMAND_BLOCK: "true"
+      LEVEL_TYPE: "default"
+      MOTD: "Minecraft Server on Docker 🚀"
+    volumes:
+      - "./data:/data"
+    restart: unless-stopped
