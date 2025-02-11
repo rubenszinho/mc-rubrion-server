@@ -1,23 +1,42 @@
-version: "3.8"
 services:
-  minecraft:
-    image: itzg/minecraft-server
+  mc_server:
+    image: itzg/minecraft-server:latest
     container_name: mc_server
-    ports:
-      - "25565:25565"
+    restart: unless-stopped
     environment:
       EULA: "TRUE"
-      VERSION: "LATEST"
-      TYPE: "PAPER"
       MEMORY: "4G"
-      ONLINE_MODE: "TRUE"
-      MAX_PLAYERS: "20"
-      VIEW_DISTANCE: "10"
-      DIFFICULTY: "normal"
-      PVP: "true"
-      ENABLE_COMMAND_BLOCK: "true"
-      LEVEL_TYPE: "default"
-      MOTD: "Minecraft Server on Docker 🚀"
+      TYPE: "PAPER"
+      VERSION: "1.20.4"
+      ONLINE_MODE: "FALSE"
+      ENABLE_RCON: "TRUE"
+      RCON_PASSWORD: "${RCON_PASSWORD}"
+      WHITELIST: "${WHITELIST}"
+      OPS: "${OPS}"
+    ports:
+      - "25565:25565"
     volumes:
-      - "./data:/data"
+      - ./data:/data
+      - ./mods:/mods
+      - ./plugins:/plugins
+    networks:
+      - mc_network
+
+  nginx:
+    image: nginx:latest
+    container_name: mc_nginx
     restart: unless-stopped
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+    ports:
+      - "80:80" # HTTP traffic
+      - "443:443" # HTTPS traffic
+    depends_on:
+      - mc_server
+    networks:
+      - mc_network
+
+networks:
+  mc_network:
+    driver: bridge
