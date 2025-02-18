@@ -2,7 +2,7 @@
 This repository contains the **server configuration and setup** for running the **Rubrion Minecraft Server**, including **Docker Compose, NGINX reverse proxy, and Cloudflare DNS**.
 
 ## **🖥️ Server Overview**
-- **OS:** Ubuntu 22.04 LTS  
+- **OS:** Ubuntu 24.04 LTS  
 - **Firewall:** Open ports  
   - `22/tcp` → SSH  
   - `25565/tcp` → Minecraft (filtered via NGINX)  
@@ -14,9 +14,9 @@ This repository contains the **server configuration and setup** for running the 
 
 ## **⚙️ Configuration Details**
 ### **🔹 Docker Compose**
-- **Minecraft Server**: Uses `itzg/minecraft-server`
-- **Persistent Storage**: `data/` (world), `mods/` (mod files), `plugins/` (if applicable)
-- **Reverse Proxy**: NGINX routes Minecraft traffic securely.
+- **Minecraft Server**: Uses `GraalVM JDK 21`
+- **Persistent Storage**: `data/` (world, configs, critical files)
+- **Reverse Proxy**: NGINX routes raw TCP traffic securely.
 
 ### **🔹 Cloudflare DNS**
 | Type | Name  | Content (Value)       | Proxy Status |
@@ -43,13 +43,26 @@ _(Displays CPU, RAM, player count, uptime, etc.)_
 
 ---
 
+## **📦 Installing & Updating the Modpack**
+> The modpack is extracted manually using `install_server_pack.sh`, ensuring that existing configuration files remain untouched.
+
+### **Extract & Install the Modpack**
+```bash
+./install_server_pack.sh
+```
+_(Downloads and extracts the latest modpack while preserving crucial configurations.)_
+
+---
+
 ## **📦 Managing Mods**
+> Mods are managed manually by placing them in `/data/mods/` and restarting the container.
+
 ### **Add a Mod**
 ```bash
-mc-rubrion-cli add-mod <URL-to-mod>
-mc-rubrion-cli restart
+cp <mod-file>.jar ./data/mods/
+docker restart mc_server
 ```
-_(Downloads and installs the mod, then restarts the server.)_
+_(Manually adds a mod and restarts the server.)_
 
 ---
 
@@ -60,7 +73,7 @@ mc-rubrion-cli backup
 ```
 _(Copies `mc_server:/data` to the `backups/` folder.)_
 
-### **Schedule Automated Backups (linux only)**
+### **Schedule Automated Backups (Linux Only)**
 ```bash
 mc-rubrion-cli schedule-backup "0 * * * *"
 ```
@@ -71,14 +84,6 @@ _(Creates a cron job to back up the server automatically.)_
 mc-rubrion-cli restore-backup <backup-file>
 ```
 _(Restores a previous world backup.)_
-
----
-
-## **📌 Notes**
-- **Cloudflare helps mitigate DDoS attacks.**  
-- **NGINX secures and filters Minecraft traffic.**  
-- **Automation tasks are managed via `mc-rubrion-cli`.**  
-- **Backups are stored in `backups/` and managed via CLI.**  
 
 ---
 
