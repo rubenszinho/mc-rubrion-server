@@ -1,39 +1,25 @@
 services:
-  mc_server:
-    image: itzg/minecraft-server:latest
-    container_name: mc_server
+  mc_rubrion_server:
+    image: container-registry.oracle.com/graalvm/jdk:23
+    container_name: mc_rubrion_server
     restart: unless-stopped
-    environment:
-      EULA: "TRUE"
-      MEMORY: "4G"
-      TYPE: "PAPER"
-      VERSION: "1.20.4"
-      ONLINE_MODE: "FALSE"
-      ENABLE_RCON: "TRUE"
-      RCON_PASSWORD: "${RCON_PASSWORD}"
-      WHITELIST: "${WHITELIST}"
-      OPS: "${OPS}"
-    ports:
-      - "25565:25565"
     volumes:
       - ./data:/data
-      - ./mods:/mods
-      - ./plugins:/plugins
+    working_dir: /data
     networks:
       - mc_network
 
   nginx:
     image: nginx:latest
-    container_name: mc_nginx
+    container_name: mc_rubrion_nginx
     restart: unless-stopped
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/conf.d:/etc/nginx/conf.d:ro
     ports:
-      - "80:80" # HTTP traffic
-      - "443:443" # HTTPS traffic
+      - "25565:25565"  # Minecraft TCP Proxy
     depends_on:
-      - mc_server
+      - mc_rubrion_server
     networks:
       - mc_network
 

@@ -1,2 +1,14 @@
 *.log
 *.backup
+
+# Ignore everything inside /data
+/data/*
+
+# Allow crucial configuration files for the server setup
+!/data/start.sh
+!/data/run.sh
+!/data/install_java.sh
+!/data/server.properties
+!/data/eula.txt
+!/data/variables.txt
+!/data/user_jvm_args.txt
