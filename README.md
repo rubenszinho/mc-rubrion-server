@@ -1,29 +1,20 @@
 # mc-rubrion-server
-This repository contains the **server configuration and setup** for running the **Rubrion Minecraft Server**, including **Docker Compose, NGINX reverse proxy, and Cloudflare DNS**.
+This repository contains the **server configuration and setup** for running the **Rubrion Minecraft Server**, including **Docker Compose, HAProxy reverse proxy, and Cloudflare DNS**.
 
 ## **🖥️ Server Overview**
 - **OS:** Ubuntu 24.04 LTS  
 - **Firewall:** Open ports  
   - `22/tcp` → SSH  
-  - `25565/tcp` → Minecraft (filtered via NGINX)  
+  - `25565/tcp` → Minecraft (filtered via HAProxy)  
 - **Domain:** `mc.rubrion.com` (managed via Cloudflare)  
-- **Reverse Proxy:** NGINX filters and routes raw TCP traffic.  
+- **Reverse Proxy:** HAProxy securely handles and routes raw TCP traffic.  
 - **Automation:** Server management via [`mc-rubrion-cli`](https://github.com/rubenszinho/mc-rubrion-cli).
-
----
 
 ## **⚙️ Configuration Details**
 ### **🔹 Docker Compose**
 - **Minecraft Server**: Uses `GraalVM JDK 21`
 - **Persistent Storage**: `data/` (world, configs, critical files)
-- **Reverse Proxy**: NGINX routes raw TCP traffic securely.
-
-### **🔹 Cloudflare DNS**
-| Type | Name  | Content (Value)       | Proxy Status |
-|------|------|----------------------|--------------|
-| `A`  | `mc` | `<VM Public IP>`      | `DNS Only`   |
-
----
+- **Reverse Proxy**: HAProxy filters raw TCP traffic.
 
 ## **🔄 Managing the Server**
 > All server commands are automated through **[`mc-rubrion-cli`](https://github.com/rubenszinho/mc-rubrion-cli)**.
@@ -41,8 +32,6 @@ mc-rubrion-cli status
 ```
 _(Displays CPU, RAM, player count, uptime, etc.)_
 
----
-
 ## **📦 Installing & Updating the Modpack**
 > The modpack is extracted manually using `install_server_pack.sh`, ensuring that existing configuration files remain untouched.
 
@@ -51,8 +40,6 @@ _(Displays CPU, RAM, player count, uptime, etc.)_
 ./install_server_pack.sh
 ```
 _(Downloads and extracts the latest modpack while preserving crucial configurations.)_
-
----
 
 ## **📦 Managing Mods**
 > Mods are managed manually by placing them in `/data/mods/` and restarting the container.
@@ -63,8 +50,6 @@ cp <mod-file>.jar ./data/mods/
 docker restart mc_server
 ```
 _(Manually adds a mod and restarts the server.)_
-
----
 
 ## **💾 Backups & Restoration**
 ### **Create a Manual Backup**
@@ -84,8 +69,6 @@ _(Creates a cron job to back up the server automatically.)_
 mc-rubrion-cli restore-backup <backup-file>
 ```
 _(Restores a previous world backup.)_
-
----
 
 ## 📝 License
 Open-sourced under the **GPL-3.0** license. See the [LICENSE](LICENSE) file for details.
