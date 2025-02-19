@@ -1,6 +1,6 @@
 services:
   mc_rubrion_server:
-    image: container-registry.oracle.com/graalvm/jdk:23
+    image: container-registry.oracle.com/graalvm/jdk:21
     container_name: mc_rubrion_server
     restart: unless-stopped
     volumes:
@@ -8,18 +8,16 @@ services:
     working_dir: /data
     networks:
       - mc_network
-    expose:
-      - "25565"
+    entrypoint: ["/bin/sh", "-c", "chmod +x /data/start.sh && /data/start.sh"]
 
-  nginx:
-    image: nginx:latest
-    container_name: mc_rubrion_nginx
+  haproxy:
+    image: haproxy:latest
+    container_name: mc_rubrion_haproxy
     restart: unless-stopped
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/conf.d:/etc/nginx/conf.d:ro
     ports:
-      - "25565:25565"
+      - "25565:25565/tcp"
+    volumes:
+      - ./haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro
     depends_on:
       - mc_rubrion_server
     networks:
